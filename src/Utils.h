@@ -13,7 +13,7 @@ typedef struct
 	__IO uint16_t Events[8];
 } EventsQueueStruct;
 
-#define MAX_EVENT_PRIORITY		4										// Максимальный приоритет события
+#define MAX_EVENT_PRIORITY		2										// Максимальный приоритет события
 #define MAX_QUEUE_CAPACITY		8													// Максимальная емкость очереди
 #define MIN_EVENT_INDX				0													// Минимальный индекс события
 #define MAX_EVENT_INDX				MAX_QUEUE_CAPACITY - 1		// Максимальный индекс события

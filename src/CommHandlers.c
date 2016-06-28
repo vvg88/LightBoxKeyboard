@@ -17,7 +17,7 @@ void SaveT1handler(const TCommReply * const comm);
 
 void ReturnStatus(const TStatus stat);
 void ReturnValue(const uint8_t cmd, const uint16_t value);
-void ReturnError(const uint16_t errCod);
+//void ReturnError(const uint16_t errCod);
 void ReturnLongReply(const uint8_t * const pBuff, size_t buffSize);
 void SendReply(const uint8_t * const buff, size_t length);
 
@@ -198,10 +198,10 @@ void ReturnValue(const uint8_t cmd, const uint16_t value)
 	* @param  errCod: код ошибки
   * @retval none
   */
-void ReturnError(const uint16_t errCod)
-{
-	ReturnValue(ST_RAP_CODE, errCod);
-}
+//void ReturnError(const uint16_t errCod)
+//{
+//	ReturnValue(ST_RAP_CODE, errCod);
+//}
 
 /**
 	* @brief  Переслать длинный ответ

@@ -30,6 +30,7 @@ int main(void)
 	BlockVersions.HwVersion = GetHwVersion();
 	TCommReply Command = {0};
 	
+	///ActiveModeInit(); ///
 	while(1)
 	{
 		GetCommand((uint8_t*)&Command);

@@ -1,17 +1,21 @@
 #include "Utils.h"
 #include "main.h"
 
+extern void EncodersInit(void);
+
 void ExceptionsInit(void);
 void BKPInit(void);
 
 /* Причина последнего сброса контроллера */
 TStatus LastResReason;
 /* Очередь событий. Представляет собой массив очередей (в каждой очереди хранятся события одного определенного приоритета) */
-EventsQueueStruct EventsQueue[3];
+EventsQueueStruct EventsQueue[2];
 
 // Initialises active mode
 void ActiveModeInit(void)
 {
+	EncodersInit();
+	
 	/* Start of the timer that samples periods of scanning buttons and encoders */
 	TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
 	TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);

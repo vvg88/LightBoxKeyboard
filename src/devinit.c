@@ -120,8 +120,11 @@ void RCC_Init(void)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6 /*RCC_APB1Periph_DAC |  | RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM5*/, ENABLE);
 	/* Разрешить тактирование DMA1 */
  	//RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
+	
+#ifdef DEBUG
 	/* Выбор источника сигнала на линии MCO */
-	//RCC_MCOConfig(RCC_MCO_SYSCLK);
+	RCC_MCOConfig(RCC_MCO_SYSCLK);
+#endif
 };
 
 /**
@@ -158,6 +161,20 @@ void GPIOinit(void)
 	/* Initialise pins as inputs for detection hardware version */
 	GpioInitStruct.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
 	GPIO_Init(GPIOD, &GpioInitStruct);
+	
+#ifdef DEBUG
+	/* Вывод системной тактовой частоты PA8 */
+	GpioInitStruct.GPIO_Pin = GPIO_Pin_8;
+	GpioInitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GpioInitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_Init(GPIOA, &GpioInitStruct);
+	
+	GpioInitStruct.GPIO_Pin = GPIO_Pin_2;
+	GpioInitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GpioInitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOD, &GpioInitStruct);
+	GPIOD->BSRR = GPIO_BSRR_BR2;
+#endif
 };
 
 /**

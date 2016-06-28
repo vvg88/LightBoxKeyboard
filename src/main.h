@@ -71,6 +71,7 @@ typedef void (*TcommHandler)(const TCommReply * const comm);
 #define MODULE_ADR 3			// Адрес модуля
 
 #define PORTA_BUTTONS_DEFAULT_STATE		0x19FF
+#define PORTB_BUTTONS_DEFAULT_STATE		0xFFF3
+#define PORTC_BUTTONS_DEFAULT_STATE		0x7C90
 
-
-#endif
+#endif /* MAIN_H */
