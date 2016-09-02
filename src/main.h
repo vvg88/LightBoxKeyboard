@@ -30,7 +30,7 @@ typedef enum
 	//WRONG_STIM_TAB_LOAD = 100,							  // Количество загруженных байт таблицы стимуляции не кратно размеру одного элемента таблицы
 	//STIM_TAB_INDX_OUT_OF_RANGE,								// Индекс таблицы стимуляции вышел за пределы массива (более 31)
 	//STIM_TAB_INDX_OUT_OF_USED_RANGE,					// Индекс таблицы стимуляции вышел за пределы используемого в данный момент диапазона элементов
-	//WRONG_HW_VERSION													// Версия аппаратного обеспечения выше той, которая заложена в программе
+	WRONG_HW_VERSION														// Версия аппаратного обеспечения выше той, которая заложена в программе
 
 } TStatus;
 
@@ -65,6 +65,17 @@ typedef struct __attribute((packed))
 	uint8_t commData[256];						// Массив данных длинной команды
 } TCommReply;
 
+typedef union
+{
+	uint32_t AllButtons;
+	struct __attribute((packed))
+	{
+		uint16_t PAbuttons : 11;
+		uint16_t PBbuttons : 14;
+		uint8_t  PCbuttons : 7;
+	};
+} TButtonsState;
+
 /* Тип обработчика команд */
 typedef void (*TcommHandler)(const TCommReply * const comm);
 
@@ -72,6 +83,8 @@ typedef void (*TcommHandler)(const TCommReply * const comm);
 
 #define PORTA_BUTTONS_DEFAULT_STATE		0x19FF
 #define PORTB_BUTTONS_DEFAULT_STATE		0xFFF3
-#define PORTC_BUTTONS_DEFAULT_STATE		0x7C90
+#define PORTC_BUTTONS_DEFAULT_STATE		0xE3C0 //7C90
+
+#define HW_VERSION 0
 
 #endif /* MAIN_H */

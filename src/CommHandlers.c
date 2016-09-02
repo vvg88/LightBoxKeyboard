@@ -148,7 +148,11 @@ void InfoReqHandler(const TCommReply * const comm)
 	switch (comm->commParam)
 	{
 		case 0:			// Перейти в активный режим
-			ReturnValue(ST_RAP_CODE, (uint16_t)(-100));
+			if (BlockVersions.HwVersion > HW_VERSION)
+				ReturnStatus(WRONG_HW_VERSION);
+			else
+				ReturnValue(ST_RAP_CODE, (uint16_t)(-100));
+			
 			ActiveModeInit();
 			ModuleState = ACTIVE;
 			EnQueue(LONG_COM_DONE_CODE, ST_OK);

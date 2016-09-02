@@ -3,7 +3,45 @@
 
 //int i = 0;
 
-uint32_t ButtonsState = 0xFFFFFFFF, ButtonsPrevState = 0xFFFFFFFF;		// Buttons' state (current and previous)
+const uint8_t ButtonsCodes[32] = 
+{
+	29,		// ENC1
+	27,		// JOY-E
+	26,		// JOY-D
+	25,		// JOY-C
+	5,		// KEY5
+	6,		// KEY6
+	30,		// ENC2
+	14,		// KEY14
+	22,		// KEY22
+	10,		// KEY10
+	13,		// KEY13
+	4,		// KEY4
+	19,		// KEY19
+	2,		// KEY2
+	7,		// KEY7
+	11,		// KEY11
+	1,		// KEY1
+	31,		// ENC3
+	15,		// KEY15
+	20,		// KEY20
+	18,		// KEY18
+	17,		// KEY17
+	12,		// KEY12
+	0,		// KEY0
+	21,		// KEY21
+	3,		// KEY3
+	8,		// KEY8
+	9,		// KEY9
+	16,		// KEY16
+	28,		// ENC0
+	24,		// JOY-B
+	23,		// JOY-A
+};
+
+
+TButtonsState ButtonsState =  { 0xFFFFFFFF };		// Buttons' state (current and previous)
+TButtonsState ButtonsPrevState = { 0xFFFFFFFF };	
 
 void ReadButtons(void);
 void ReadEncoders(void);
@@ -127,8 +165,8 @@ void ReadEncoders(void)
 {
 	enc0NewState = (uint8_t)(GPIOC->IDR & 0x03);					// Read an encoders' new state
 	enc1NewState = (uint8_t)((GPIOC->IDR >> 2) & 0x03);
-	enc2NewState = (uint8_t)((GPIOC->IDR >> 5) & 0x03);
-	enc3NewState = (uint8_t)((GPIOC->IDR >> 8) & 0x03);
+	enc2NewState = (uint8_t)((GPIOC->IDR >> 4) & 0x03);
+	enc3NewState = (uint8_t)((GPIOC->IDR >> 10) & 0x03);
 		
 	switch (enc3State)							// Depending on a current and a new state
 	{																// increment or decrement a counter
@@ -286,17 +324,17 @@ void ButtonsHandler(void)
 	if (ButtnsStableChanged)			// if a state's been changed
 	{
 		ButtonsPrevState = ButtonsState;			// Save a new state
-		ButtonsState = (ButtonsState & 0xFFFFF800) | ((ButtonsPaStableState & 0x01FF) | ((ButtonsPaStableState >> 2) & 0x0600));
-		ButtonsState = (ButtonsState & 0xFE0007FF) | (((ButtonsPbStableState & 0x0003) | ((ButtonsPbStableState >> 2) & 0x3FFC)) << 11 );
-		ButtonsState = (ButtonsState & 0x01FFFFFF) | ((((ButtonsPcStableState >> 8) & 0x07C0) | ((ButtonsPcStableState >> 6) & 0x0002) | ((ButtonsPcStableState >> 4) & 0x0001)) << 25);
+		ButtonsState.PAbuttons = (ButtonsPaStableState & 0x01FF) | ((ButtonsPaStableState >> 2) & 0x0600);
+		ButtonsState.PBbuttons = (ButtonsPbStableState & 0x0003) | ((ButtonsPbStableState >> 2) & 0x3FFC);
+		ButtonsState.PCbuttons = ((ButtonsPcStableState >> 6) & 0x000F) | ((ButtonsPcStableState >> 9) & 0x0070);
 		
 		uint8_t buttonCode = 0;
 		for (int i = 0; i < 32; i++)		// In this loop
 		{
-			if((ButtonsState ^ ButtonsPrevState) & (1 << i))					// Detect which button changed its state
+			if((ButtonsState.AllButtons ^ ButtonsPrevState.AllButtons) & (1 << i))					// Detect which button changed its state
 			{
-				buttonCode = ((ButtonsState & (1 << i)) ? 0x80 : 0x40) | i;		// Create an event depending on pressing or releasing a button
-				EnQueue(BUTTON_CODE, buttonCode);																// and enqueue an event
+				buttonCode = ((ButtonsState.AllButtons & (1 << i)) ? 0x80 : 0x40) | ButtonsCodes[i];	// Create an event depending on pressing or releasing a button
+				EnQueue(BUTTON_CODE, buttonCode);																											// and enqueue an event
 			}
 		}
 		ButtnsStableChanged = false;
@@ -308,5 +346,5 @@ void EncodersInit(void)
 {
 	enc0State = enc0NewState = (uint8_t)(GPIOC->IDR & 0x03);
 	enc1State = enc1NewState = (uint8_t)((GPIOC->IDR >> 2) & 0x03);
-	enc2State = enc2NewState = (uint8_t)((GPIOC->IDR >> 5) & 0x03);
+	enc2State = enc2NewState = (uint8_t)((GPIOC->IDR >> 4) & 0x03);
 };
