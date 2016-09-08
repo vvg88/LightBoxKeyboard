@@ -40,8 +40,9 @@ const uint8_t ButtonsCodes[32] =
 };
 
 
-TButtonsState ButtonsState =  { 0xFFFFFFFF };		// Buttons' state (current and previous)
-TButtonsState ButtonsPrevState = { 0xFFFFFFFF };	
+//TButtonsState ButtonsState = { 0xFFFFFFFF };		// Buttons' state (current and previous)
+//TButtonsState ButtonsPrevState = { 0xFFFFFFFF };	
+uint32_t ButtonsState = 0xFFFFFFFF, ButtonsPrevState = 0xFFFFFFFF;
 
 void ReadButtons(void);
 void ReadEncoders(void);
@@ -324,16 +325,20 @@ void ButtonsHandler(void)
 	if (ButtnsStableChanged)			// if a state's been changed
 	{
 		ButtonsPrevState = ButtonsState;			// Save a new state
-		ButtonsState.PAbuttons = (ButtonsPaStableState & 0x01FF) | ((ButtonsPaStableState >> 2) & 0x0600);
+		/*ButtonsState.PAbuttons = (ButtonsPaStableState & 0x01FF) | ((ButtonsPaStableState >> 2) & 0x0600);
 		ButtonsState.PBbuttons = (ButtonsPbStableState & 0x0003) | ((ButtonsPbStableState >> 2) & 0x3FFC);
-		ButtonsState.PCbuttons = ((ButtonsPcStableState >> 6) & 0x000F) | ((ButtonsPcStableState >> 9) & 0x0070);
+		ButtonsState.PCbuttons = ((ButtonsPcStableState >> 6) & 0x000F) | ((ButtonsPcStableState >> 9) & 0x0070);*/
+		
+		ButtonsState = (ButtonsPaStableState & 0x01FF) | ((ButtonsPaStableState >> 2) & 0x0600);
+		ButtonsState |= ((ButtonsPbStableState & 0x0003) | ((ButtonsPbStableState >> 2) & 0x3FFC)) << 11;
+		ButtonsState |= (((ButtonsPcStableState >> 6) & 0x000F) | ((ButtonsPcStableState >> 9) & 0x0070)) <<  25;
 		
 		uint8_t buttonCode = 0;
 		for (int i = 0; i < 32; i++)		// In this loop
 		{
-			if((ButtonsState.AllButtons ^ ButtonsPrevState.AllButtons) & (1 << i))					// Detect which button changed its state
+			if((ButtonsState ^ ButtonsPrevState) & (1 << i))					// Detect which button changed its state
 			{
-				buttonCode = ((ButtonsState.AllButtons & (1 << i)) ? 0x80 : 0x40) | ButtonsCodes[i];	// Create an event depending on pressing or releasing a button
+				buttonCode = ((ButtonsState & (1 << i)) ? 0x80 : 0x40) | ButtonsCodes[i];	// Create an event depending on pressing or releasing a button
 				EnQueue(BUTTON_CODE, buttonCode);																											// and enqueue an event
 			}
 		}

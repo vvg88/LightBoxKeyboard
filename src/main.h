@@ -68,7 +68,7 @@ typedef struct __attribute((packed))
 typedef union
 {
 	uint32_t AllButtons;
-	struct __attribute((packed))
+	struct
 	{
 		uint16_t PAbuttons : 11;
 		uint16_t PBbuttons : 14;
