@@ -65,16 +65,18 @@ typedef struct __attribute((packed))
 	uint8_t commData[256];						// Массив данных длинной команды
 } TCommReply;
 
-typedef union
+typedef struct __attribute((packed))
 {
-	uint32_t AllButtons;
-	struct
-	{
 		uint16_t PAbuttons : 11;
 		uint16_t PBbuttons : 14;
 		uint8_t  PCbuttons : 7;
-	};
 } TButtonsState;
+
+typedef union
+{
+	uint32_t AllButtons;
+	TButtonsState ButtonsOnPorts;
+} ButtonsStateUn;
 
 /* Тип обработчика команд */
 typedef void (*TcommHandler)(const TCommReply * const comm);
