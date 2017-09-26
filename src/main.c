@@ -18,7 +18,7 @@ TBlockInfo BlockVersions =
 	1,
 	0,
 	0,
-	1
+	2
 };
 
 int main(void)
