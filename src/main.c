@@ -30,9 +30,9 @@ int main(void)
 	BlockVersions.HwVersion = GetHwVersion();
 	TCommReply Command = {0};
 	
-	///ActiveModeInit(); ///
 	while(1)
 	{
+		IWDG_ReloadCounter();		// Reset watchdog counter
 		GetCommand((uint8_t*)&Command);
 		CommHandler(&Command);
 		ButtonsHandler();

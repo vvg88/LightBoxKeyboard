@@ -51,18 +51,10 @@ void SetSysClockHsiTo24(void)
 void RCC_Init(void)
 {
 	/* Установка тактирования порта А, порта В и С, таймеров 1 и 8, АЦП1, АЦП2, АЦП3 */
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO | RCC_APB2Periph_USART1 /*RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM1 |*/ 
-												 /*| RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_SPI1 | RCC_APB2Periph_ADC3*/, ENABLE);
-	/* Установить частоту тактирования АЦП 12 МГц */
-	//RCC_ADCCLKConfig(RCC_PCLK2_Div4);
-	
-	/* Установить частоту APB1 6 МГц */
-	//RCC_PCLK1Config(RCC_HCLK_Div8);
-	
+ 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO | RCC_APB2Periph_USART1, ENABLE);
+
 	/* Установка тактирования таймера 6 */
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6 /*RCC_APB1Periph_DAC |  | RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM5*/, ENABLE);
-	/* Разрешить тактирование DMA1 */
- 	//RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
 	
 #ifdef DEBUG
 	/* Выбор источника сигнала на линии MCO */
@@ -182,9 +174,25 @@ void NVICinit(void)
 	NVIC_Init(&NVICinitStruct);
 };
 
+void IwdgInitAndStart(void)
+{
+	RCC_LSICmd(ENABLE); // Enable LSI
+	while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) != SET);	// wait until LSI sets a stable frequency
+	
+	// Set prascaler and reload value so as to get 1.5 s interval
+	// 1 / (40000 Hz / 16) * 3750(0xEA6) = 1.5 s
+	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);		// Enable write to prescaler and reload register
+	IWDG_SetPrescaler(IWDG_Prescaler_16);
+	IWDG_SetReload(0xEA6);
+	IWDG_WriteAccessCmd(IWDG_WriteAccess_Disable);
+	
+	IWDG_Enable();	// Enable watchdog
+}
+
 // Инициализация микроконтроллера
 void DeviceInit(void)
 {
+	IwdgInitAndStart();
 	RCC_Init();
 	GPIOinit();
 	USARTInit();

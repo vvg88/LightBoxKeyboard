@@ -1,8 +1,6 @@
 #include "main.h"
 #include "Utils.h"
 
-//int i = 0;
-
 const uint8_t ButtonsCodes[32] = 
 {
 	29,		// ENC1
@@ -39,9 +37,6 @@ const uint8_t ButtonsCodes[32] =
 	23,		// JOY-A
 };
 
-
-//TButtonsState ButtonsState = { 0xFFFFFFFF };		// Buttons' state (current and previous)
-//TButtonsState ButtonsPrevState = { 0xFFFFFFFF };	
 uint32_t ButtonsState = 0xFFFFFFFF, ButtonsPrevState = 0xFFFFFFFF;
 
 void ReadButtons(void);
@@ -325,9 +320,6 @@ void ButtonsHandler(void)
 	if (ButtnsStableChanged)			// if a state's been changed
 	{
 		ButtonsPrevState = ButtonsState;			// Save a new state
-		/*ButtonsState.PAbuttons = (ButtonsPaStableState & 0x01FF) | ((ButtonsPaStableState >> 2) & 0x0600);
-		ButtonsState.PBbuttons = (ButtonsPbStableState & 0x0003) | ((ButtonsPbStableState >> 2) & 0x3FFC);
-		ButtonsState.PCbuttons = ((ButtonsPcStableState >> 6) & 0x000F) | ((ButtonsPcStableState >> 9) & 0x0070);*/
 		
 		ButtonsState = (ButtonsPaStableState & 0x01FF) | ((ButtonsPaStableState >> 2) & 0x0600);
 		ButtonsState |= ((ButtonsPbStableState & 0x0003) | ((ButtonsPbStableState >> 2) & 0x3FFC)) << 11;

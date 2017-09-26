@@ -60,10 +60,7 @@ void CommHandler(const TCommReply * const comm)
 		else													// Если длинная команда
 		{
 			// Обработка длинных команд
-			/*if (comm->commIndx < ELEMENTS_OF(LongCommHandler))
-				LongCommHandler[comm->commIndx](comm);
-			else*/
-				ReturnStatus(ST_CMD_UNKNOWN);
+			ReturnStatus(ST_CMD_UNKNOWN);
 		}
 	}
 	else
@@ -198,16 +195,6 @@ void ReturnValue(const uint8_t cmd, const uint16_t value)
 }
 
 /**
-	* @brief  Послать код ошибки таблицы стим-ции
-	* @param  errCod: код ошибки
-  * @retval none
-  */
-//void ReturnError(const uint16_t errCod)
-//{
-//	ReturnValue(ST_RAP_CODE, errCod);
-//}
-
-/**
 	* @brief  Переслать длинный ответ
 	* @param  pBuff: указатель на буфр с данными
 	* @param  buffSize: размер буфера
@@ -320,5 +307,4 @@ void SendReply(const uint8_t * const buff, size_t length)
 	
 	while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
 	USART_SendData(USART1, crc);							// Передать CRC
-	
 }
